@@ -45,7 +45,6 @@ getRandomWord:
 #getGuess - reads user guess into guessBuffer
 #ensures that length = 5, no characters/numbers, converts lowercase into uppercase
 getGuess:
-retryInput:
 	printString(guessPrompt)	#print the prompt
 	#read into buffer
 	readString(guessBuffer, 16) #16 chars maximum
@@ -108,4 +107,4 @@ validInput:
 
 invalidInput:
 	printString(invalidMsg)
-	j retryInput
+	j getGuess
