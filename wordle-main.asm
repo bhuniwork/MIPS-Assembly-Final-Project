@@ -4,14 +4,26 @@
 .include "wordList.asm"
 
 .data
+gameStart: .asciiz "Welcome to Wordle! You will have 6 tries to guess the correct word.\n"
 guessBuffer: .space 16 #enough for 16 bytes - 5 letters, newline, null terminator, and 9 extra
 guessPrompt: .asciiz "\nPlease enter a 5-letter guess: "
 invalidMsg: .asciiz "\nInvalid input. Please enter exactly 5 letters (A-Z)."
+playAgain: .asciiz "Restart? \n(1)Yes \n(0)No"
+youWin: .asciiz "Congratulations! The word is: "
+youLose: .asciiz "You failed! The word was: "
+wrongLetter: .asciiz " is not in the word!"
+correctPlace: .asciiz " is in the correct place!"
+wrongPlace: .asciiz " is in the wrong place!"
+triesRemaining: .asciiz "Tries remaining: "
 
 .text
 main:
+	printString(gameStart)
 	jal getRandomWord
 	jal getGuess
+	
+	li $t8, 6
+	jal evaluateGuess
 	
 	#print guessBuffer for testing purposes - REMOVE IN SUBMISSION
 	li $v0, 4
@@ -33,7 +45,7 @@ getRandomWord:
 	
 	la $s0, wordList
 	addu $s0, $s0, $t3	#set $s0 pointer to 0 + offset in $t3
-	lw $s1, 0($s0)	#chosen word is saved in $s1
+	lw $s1, 0($s0)		#chosen word is saved in $s1
 	
 	#print the chosen word for testing - REMOVE FOLLOWING LINES IN SUBMISSION
 	move $a0, $s1
@@ -108,3 +120,60 @@ validInput:
 invalidInput:
 	printString(invalidMsg)
 	j getGuess
+	
+evaluateGuess:
+	#compare word to user's guess
+	#wrong letter -> print wrongLetter string
+	
+	printString(wrongLetter)
+	
+	#right letter(s), wrong place -> print wrongPlace string
+	
+	printString(wrongPlace)
+	
+	#right letter(s), right place -> print correctPlace string
+	
+	printString(correctPlace)
+	
+	#increment guess counter and print tries remaining, >6 guesses = |  ||
+	#			                                         ||  |
+	bge $t8, 0, lose
+	subi $t8, $t8, 1
+	printString(triesRemaining)
+	printInt($t8)
+
+lose:
+	#Print youLose string and the random word
+	printString(youLose)
+	li $v0, 4
+	move $a0, $s1
+	syscall
+	
+	#prompt user to play again
+	j restart
+
+win:
+	#Print youWin string and the random word
+	printString(youWin)
+	li $v0, 4
+	move $a0, $s1
+	syscall
+	
+	#prompt user to play again
+	j restart
+
+restart:
+	#ask user to play again or exit
+	printString(playAgain)
+	getInt
+	move $t9, $v0
+	
+	beq $t9, 1, main
+	beq $t9, 0, exit
+	
+exit:
+	exit
+	
+
+	
+	
