@@ -122,25 +122,62 @@ invalidInput:
 	j getGuess
 	
 evaluateGuess:
-	#compare word to user's guess
-	#wrong letter -> print wrongLetter string
-	
-	printString(wrongLetter)
-	
-	#right letter(s), wrong place -> print wrongPlace string
-	
-	printString(wrongPlace)
-	
-	#right letter(s), right place -> print correctPlace string
-	
-	printString(correctPlace)
-	
-	#increment guess counter and print tries remaining, >6 guesses = |  ||
-	#			                                         ||  |
-	bge $t8, 0, lose
-	subi $t8, $t8, 1
-	printString(triesRemaining)
-	printInt($t8)
+    la $t0, guessBuffer   
+    move $t1, $s1         
+
+    li $t2, 0             
+    li $t3, 1             
+
+evalLetterLoop:
+    beq $t2, 5, evalDone  
+
+    addu $t4, $t0, $t2
+    lb $t5, 0($t4)       
+
+    addu $t6, $t1, $t2
+    lb $t7, 0($t6)       
+
+    beq $t5, $t7, correctPlaceLabel
+    li $t8, 0           
+
+searchLoop:
+    beq $t8, 5, notFoundInAnswer
+    addu $t9, $t1, $t8
+    lb $s4, 0($t9)
+    beq $t5, $s4, wrongPlaceLabel
+    addi $t8, $t8, 1
+    j searchLoop
+
+notFoundInAnswer:
+    move $a0, $t5
+    li $v0, 11
+    syscall
+    printString(wrongLetter)
+    li $t3, 0           
+    j nextEvalLetter
+
+wrongPlaceLabel:
+    move $a0, $t5
+    li $v0, 11
+    syscall
+    printString(wrongPlace)
+    li $t3, 0
+    j nextEvalLetter
+
+correctPlaceLabel:
+    move $a0, $t5
+    li $v0, 11
+    syscall
+    printString(correctPlace)
+    j nextEvalLetter
+
+nextEvalLetter:
+    addi $t2, $t2, 1
+    j evalLetterLoop
+
+evalDone:
+    move $v0, $t3   
+    jr $ra
 
 lose:
 	#Print youLose string and the random word
