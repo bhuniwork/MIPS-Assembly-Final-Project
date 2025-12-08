@@ -34,12 +34,6 @@ tryloop:
 	j tryloop	
 	exit
 	
-	#print guessBuffer for testing purposes - REMOVE IN SUBMISSION
-	#li $v0, 4
-	#la $a0, guessBuffer
-	#syscall
-	
-
 getRandomWord:
 	li $v0, 30	#get system time and set $t0 to the value
 	syscall
@@ -55,12 +49,7 @@ getRandomWord:
 	la $s0, wordList
 	addu $s0, $s0, $t3	#set $s0 pointer to 0 + offset in $t3
 	lw $s1, 0($s0)		#chosen word is saved in $s1
-	
-	#print the chosen word for testing - REMOVE FOLLOWING LINES IN SUBMISSION
-	#move $a0, $s1
-	#li $v0, 4
-	#syscall
-	
+		
 	jr $ra
 
 #getGuess - reads user guess into guessBuffer
