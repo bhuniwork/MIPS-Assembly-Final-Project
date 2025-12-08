@@ -20,11 +20,21 @@ tries: .word 6
 .text
 main:
 	printString(gameStart)
-	jal getRandomWord
-	jal getGuess
-	
+	jal getRandomWord	
 	li $t8, 6
+tryloop:
+	jal getGuess
 	jal evaluateGuess
+	
+	beq $v0, 1, win
+	addi $t8, $t8, -1
+	beq $t8, $zero, lose
+	
+	printString(triesRemaining)
+	printInt($t8)
+	j tryloop
+	j exit
+	
 	
 	#print guessBuffer for testing purposes - REMOVE IN SUBMISSION
 	li $v0, 4
