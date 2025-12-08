@@ -8,14 +8,13 @@ gameStart: .asciiz "Welcome to Wordle! You will have 6 tries to guess the correc
 guessBuffer: .space 16 #enough for 16 bytes - 5 letters, newline, null terminator, and 9 extra
 guessPrompt: .asciiz "\nPlease enter a 5-letter guess: "
 invalidMsg: .asciiz "\nInvalid input. Please enter exactly 5 letters (A-Z)."
-playAgain: .asciiz " Restart? \n(1)Yes \n(0)No"
+playAgain: .asciiz " \nRestart? \n(1)Yes \n(0)No\n"
 youWin: .asciiz "Congratulations! The word is: "
-youLose: .asciiz "You failed! The word was: "
-wrongLetter: .asciiz " is not in the word!"
-correctPlace: .asciiz " is in the correct place!"
-wrongPlace: .asciiz " is in the wrong place!"
-triesRemaining: .asciiz "Tries remaining: "
-tries: .word 6
+youLose: .asciiz "\nYou failed! The word was: "
+wrongLetter: .asciiz " is not in the word! "
+correctPlace: .asciiz " is in the correct place! "
+wrongPlace: .asciiz " is in the wrong place! "
+triesRemaining: .asciiz "\nTries remaining: "
 
 .text
 main:
@@ -32,15 +31,14 @@ tryloop:
 	
 	printString(triesRemaining)
 	printInt($t8)
-	j tryloop
-	j exit
-	
+	j tryloop	
+	exit
 	
 	#print guessBuffer for testing purposes - REMOVE IN SUBMISSION
-	li $v0, 4
-	la $a0, guessBuffer
-	syscall
-	exit
+	#li $v0, 4
+	#la $a0, guessBuffer
+	#syscall
+	
 
 getRandomWord:
 	li $v0, 30	#get system time and set $t0 to the value
@@ -59,9 +57,9 @@ getRandomWord:
 	lw $s1, 0($s0)		#chosen word is saved in $s1
 	
 	#print the chosen word for testing - REMOVE FOLLOWING LINES IN SUBMISSION
-	move $a0, $s1
-	li $v0, 4
-	syscall
+	#move $a0, $s1
+	#li $v0, 4
+	#syscall
 	
 	jr $ra
 
@@ -213,7 +211,7 @@ win:
 restart:
 	#ask user to play again or exit
 	printString(playAgain)
-	getInt
+	getInt($t0)
 	move $t9, $v0
 	
 	beq $t9, 1, main
