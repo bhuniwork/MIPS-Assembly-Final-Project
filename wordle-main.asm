@@ -8,13 +8,14 @@ gameStart: .asciiz "Welcome to Wordle! You will have 6 tries to guess the correc
 guessBuffer: .space 16 #enough for 16 bytes - 5 letters, newline, null terminator, and 9 extra
 guessPrompt: .asciiz "\nPlease enter a 5-letter guess: "
 invalidMsg: .asciiz "\nInvalid input. Please enter exactly 5 letters (A-Z)."
-playAgain: .asciiz "Restart? \n(1)Yes \n(0)No"
+playAgain: .asciiz " Restart? \n(1)Yes \n(0)No"
 youWin: .asciiz "Congratulations! The word is: "
 youLose: .asciiz "You failed! The word was: "
 wrongLetter: .asciiz " is not in the word!"
 correctPlace: .asciiz " is in the correct place!"
 wrongPlace: .asciiz " is in the wrong place!"
 triesRemaining: .asciiz "Tries remaining: "
+tries: .word 6
 
 .text
 main:
@@ -138,14 +139,14 @@ evalLetterLoop:
     lb $t7, 0($t6)       
 
     beq $t5, $t7, correctPlaceLabel
-    li $t8, 0           
+    li $s3, 0           
 
 searchLoop:
-    beq $t8, 5, notFoundInAnswer
-    addu $t9, $t1, $t8
+    beq $s3, 5, notFoundInAnswer
+    addu $t9, $t1, $s3
     lb $s4, 0($t9)
     beq $t5, $s4, wrongPlaceLabel
-    addi $t8, $t8, 1
+    addi $s3, $s3, 1
     j searchLoop
 
 notFoundInAnswer:
