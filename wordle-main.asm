@@ -7,7 +7,7 @@
 gameStart: .asciiz "Welcome to Wordle! You will have 6 tries to guess the correct word.\n"
 guessBuffer: .space 16 #enough for 16 bytes - 5 letters, newline, null terminator, and 9 extra
 guessPrompt: .asciiz "\nPlease enter a 5-letter guess: "
-invalidMsg: .asciiz "\nInvalid input. Please enter exactly 5 letters (A-Z)."
+invalidMsg: .asciiz "Invalid input. Please enter exactly 5 letters (A-Z)."
 playAgain: .asciiz " \nRestart? \n(1)Yes \n(0)No\n"
 youWin: .asciiz "Congratulations! The word is: "
 youLose: .asciiz "\nYou failed! The word was: "
